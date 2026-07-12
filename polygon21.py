@@ -28,16 +28,6 @@ def fold_centered(v0, v1, v2, v3):
     return v0 - center, v1 - center, v2 - center, v3 - center
 
 
-# def recut(v0, v1, v2, v3):
-    m = (v1 + v3) / 2
-    d = v3 - v1
-    v0_folded = m - (d / np.conj(d)) * np.conj(v0 - m)
-    new_v0 = v1
-    new_v1 = v2
-    new_v2 = v3
-    new_v3 = v0_folded
-    return new_v0, new_v1, new_v2, new_v3
-
 def recut(v0, v1, v2, v3): #This function is responsible for recutting operation
     theta1 = np.angle(v2 - v1)
     theta2 = np.angle((v3 - v1) / (v2 - v1))
