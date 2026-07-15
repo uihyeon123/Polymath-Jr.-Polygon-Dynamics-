@@ -21,9 +21,23 @@ def fold(v0, v1, v2, v3): #This operation is responsible for folding operation
     new_v3 = v0_folded
     return new_v0, new_v1, new_v2, new_v3
 
-
 def fold_centered(v0, v1, v2, v3):
     v0, v1, v2, v3 = fold(v0, v1, v2, v3)
+    center = (v0 + v1 + v2 + v3) / 4
+    return v0 - center, v1 - center, v2 - center, v3 - center
+
+
+def fold_reverse(v0, v1, v2, v3): #This operation is folding operation, 
+    v0_folded = (np.conj(v0 - v1) * (v3 - v1)) / np.conj(v3 - v1) + v1
+    new_v0 = v3
+    new_v1 = v0_folded
+    new_v2 = v1
+    new_v3 = v2
+    return new_v0, new_v1, new_v2, new_v3
+
+
+def fold_reverse_centered(v0, v1, v2, v3):
+    v0, v1, v2, v3 = fold_reverse(v0, v1, v2, v3)
     center = (v0 + v1 + v2 + v3) / 4
     return v0 - center, v1 - center, v2 - center, v3 - center
 
@@ -47,10 +61,54 @@ def recut_centered(v0, v1, v2, v3):
     center = (v0 + v1 + v2 + v3) / 4
     return v0 - center, v1 - center, v2 - center, v3 - center
 
+def snap(v0, v1, v2, v3):
+    v0_snapped = (v1 + v3)/2
+    new_v0 = v1
+    new_v1 = v2
+    new_v2 = v3
+    new_v3 = v0_snapped
+    return new_v0, new_v1, new_v2, new_v3
+
+def snap_centered(v0, v1, v2, v3):
+    v0, v1, v2, v3 = snap(v0, v1, v2, v3)
+    center = (v0 + v1 + v2 + v3) / 4
+    return v0 - center, v1 - center, v2 - center, v3 - center
+
+def fold_then_recut(v0, v1, v2, v3):
+    v0_folded = (np.conj(v0 - v1) * (v3 - v1)) / np.conj(v3 - v1) + v1
+    new_v0 = v1
+    new_v1 = v2
+    new_v2 = v3
+    new_v3 = v0_folded
+
+    theta1 = np.angle(new_v2 - new_v1)
+    theta2 = np.angle((new_v3 - new_v1) / (new_v2 - new_v1))
+    theta3 = np.angle((new_v0 - new_v1) / (new_v3 - new_v1))
+    translation = (np.linalg.norm(new_v3 - new_v1))/2 * 1j
+
+    v0_folded = (np.conj((new_v0 - new_v1) * np.exp(1j*(np.pi/2 - theta1 - theta2)) - translation) + translation) * np.exp(-1j*(np.pi/2 - theta1 - theta2)) + new_v1
+    newnew_v0 = new_v1
+    newnew_v1 = new_v2
+    newnew_v2 = new_v3
+    newnew_v3 = v0_folded
+    return newnew_v0, newnew_v1, newnew_v2, newnew_v3
+    
+
+def fold_then_recut_centered(v0, v1, v2, v3):
+    v0, v1, v2, v3 = fold_then_recut(v0, v1, v2, v3)
+    center = (v0 + v1 + v2 + v3) / 4
+    return v0 - center, v1 - center, v2 - center, v3 - center
+
+
+
 
 FOLD_FUNCS = {
     "Diagonal Reflection": (fold, fold_centered),
+    "Diagonal Reflection in Reverse Direction": (fold_reverse, fold_reverse_centered),
     "Perpendicular Bisector Reflection": (recut, recut_centered),
+    "Snap": (snap, snap_centered),
+    "Fold then Recut": (fold_then_recut, fold_then_recut_centered)
+    
 }
 
 
@@ -626,7 +684,7 @@ else:
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        iters = st.slider("Animation Iterations", 1, 200, 50, 1, key="dd_iters")
+        iters = st.slider("Animation Iterations", 1, 500, 50, 1, key="dd_iters")
 
     with col2:
         duration = st.slider("Frame Duration (ms)", 50, 1000, 300, 50, key="dd_duration")
