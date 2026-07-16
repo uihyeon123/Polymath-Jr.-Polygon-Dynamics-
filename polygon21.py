@@ -130,11 +130,11 @@ def recut_then_fold_centered(v0, v1, v2, v3):
 
 FOLD_FUNCS = {
     "Fold": (fold, fold_centered),
-    "Fold in Reverse Direction": (fold_reverse, fold_reverse_centered),
+    "Fold in Reverse Order": (fold_reverse, fold_reverse_centered),
     "Recut": (recut, recut_centered),
     "Snap": (snap, snap_centered),
     "Fold then Recut": (fold_then_recut, fold_then_recut_centered),
-    "Recut then fold": (recut_then_fold, recut_then_fold_centered)
+    "Recut then Fold": (recut_then_fold, recut_then_fold_centered)
     
 }
 
