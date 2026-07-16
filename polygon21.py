@@ -13,7 +13,9 @@ st.title("Cyclic Folding")
 # Folding Functions
 # =========================
 
-def fold(v0, v1, v2, v3): #This operation is responsible for folding operation
+# This function folds vi across the diagonal connecting adjacent verticies
+
+def fold(v0, v1, v2, v3): 
     v0_folded = (np.conj(v0 - v1) * (v3 - v1)) / np.conj(v3 - v1) + v1
     new_v0 = v1
     new_v1 = v2
@@ -26,8 +28,10 @@ def fold_centered(v0, v1, v2, v3):
     center = (v0 + v1 + v2 + v3) / 4
     return v0 - center, v1 - center, v2 - center, v3 - center
 
+# Same as fold function, but in reverse order. (v0 -> v3 -> v2 -> .. 
+# instead of v0 -> v1 -> v2 -> ..)
 
-def fold_reverse(v0, v1, v2, v3): #This operation is folding operation, 
+def fold_reverse(v0, v1, v2, v3): 
     v0_folded = (np.conj(v0 - v1) * (v3 - v1)) / np.conj(v3 - v1) + v1
     new_v0 = v3
     new_v1 = v0_folded
@@ -35,14 +39,16 @@ def fold_reverse(v0, v1, v2, v3): #This operation is folding operation,
     new_v3 = v2
     return new_v0, new_v1, new_v2, new_v3
 
-
 def fold_reverse_centered(v0, v1, v2, v3):
     v0, v1, v2, v3 = fold_reverse(v0, v1, v2, v3)
     center = (v0 + v1 + v2 + v3) / 4
     return v0 - center, v1 - center, v2 - center, v3 - center
 
+# This function is responsible for recutting operation
+# which folds vi across the perpendicular bisector of the diagonal connecting
+# adjacent vertices
 
-def recut(v0, v1, v2, v3): #This function is responsible for recutting operation
+def recut(v0, v1, v2, v3): 
     theta1 = np.angle(v2 - v1)
     theta2 = np.angle((v3 - v1) / (v2 - v1))
     theta3 = np.angle((v0 - v1) / (v3 - v1))
@@ -55,11 +61,13 @@ def recut(v0, v1, v2, v3): #This function is responsible for recutting operation
     new_v3 = v0_folded
     return new_v0, new_v1, new_v2, new_v3
 
-
 def recut_centered(v0, v1, v2, v3):
     v0, v1, v2, v3 = recut(v0, v1, v2, v3)
     center = (v0 + v1 + v2 + v3) / 4
     return v0 - center, v1 - center, v2 - center, v3 - center
+
+# This function moves vi to the midpoint of the diagonal connecting
+# two adjacent vertices 
 
 def snap(v0, v1, v2, v3):
     v0_snapped = (v1 + v3)/2
@@ -73,6 +81,11 @@ def snap_centered(v0, v1, v2, v3):
     v0, v1, v2, v3 = snap(v0, v1, v2, v3)
     center = (v0 + v1 + v2 + v3) / 4
     return v0 - center, v1 - center, v2 - center, v3 - center
+
+# This function folds the vertices that trace back to v0 and v2 and
+# recuts vertices that trace back to v1 and v3. 
+# The sequence is as follows:
+# fold(v0), recut(v1), fold(v2), recut(v3), fold(fold(v0)), recut(recut(v1)), fold(fold(v2)), ..
 
 def fold_then_recut(v0, v1, v2, v3):
     v0_folded = (np.conj(v0 - v1) * (v3 - v1)) / np.conj(v3 - v1) + v1
@@ -93,14 +106,14 @@ def fold_then_recut(v0, v1, v2, v3):
     newnew_v3 = v0_folded
     return newnew_v0, newnew_v1, newnew_v2, newnew_v3
     
-
 def fold_then_recut_centered(v0, v1, v2, v3):
     v0, v1, v2, v3 = fold_then_recut(v0, v1, v2, v3)
     center = (v0 + v1 + v2 + v3) / 4
     return v0 - center, v1 - center, v2 - center, v3 - center
 
-def recut_then_fold(v0, v1, v2, v3):
+# This function does the same operation as above, but it does recutting before folding
 
+def recut_then_fold(v0, v1, v2, v3):
     theta1 = np.angle(v2 - v1)
     theta2 = np.angle((v3 - v1) / (v2 - v1))
     theta3 = np.angle((v0 - v1) / (v3 - v1))
@@ -119,9 +132,25 @@ def recut_then_fold(v0, v1, v2, v3):
     newnew_v3 = v0_folded
     return newnew_v0, newnew_v1, newnew_v2, newnew_v3
     
-
 def recut_then_fold_centered(v0, v1, v2, v3):
     v0, v1, v2, v3 = recut_then_fold(v0, v1, v2, v3)
+    center = (v0 + v1 + v2 + v3) / 4
+    return v0 - center, v1 - center, v2 - center, v3 - center
+
+# This funcion both folds and recuts the same vertices at each iteration
+
+def fold_and_recut(v0, v1, v2, v3):
+    v0_folded = v1 + v3 - v0
+
+    new_v0 = v1
+    new_v1 = v2
+    new_v2 = v3
+    new_v3 = v0_folded
+
+    return new_v0, new_v1, new_v2, new_v3
+
+def fold_and_recut_centered(v0, v1, v2, v3):
+    v0, v1, v2, v3 = fold_and_recut(v0, v1, v2, v3)
     center = (v0 + v1 + v2 + v3) / 4
     return v0 - center, v1 - center, v2 - center, v3 - center
 
@@ -129,13 +158,14 @@ def recut_then_fold_centered(v0, v1, v2, v3):
 
 
 FOLD_FUNCS = {
-    "Fold": (fold, fold_centered),
-    "Fold in Reverse Order": (fold_reverse, fold_reverse_centered),
-    "Recut": (recut, recut_centered),
+    "Diagonal Reflection": (fold, fold_centered),
+    "Diagonal Reflection in Reverse Order": (fold_reverse, fold_reverse_centered),
     "Snap": (snap, snap_centered),
+    "Recut": (recut, recut_centered),
     "Fold then Recut": (fold_then_recut, fold_then_recut_centered),
-    "Recut then Fold": (recut_then_fold, recut_then_fold_centered)
-    
+    "Recut then Fold": (recut_then_fold, recut_then_fold_centered),
+    "Fold and Recut": (fold_and_recut, fold_and_recut_centered),
+       
 }
 
 
