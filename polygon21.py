@@ -99,15 +99,42 @@ def fold_then_recut_centered(v0, v1, v2, v3):
     center = (v0 + v1 + v2 + v3) / 4
     return v0 - center, v1 - center, v2 - center, v3 - center
 
+def recut_then_fold(v0, v1, v2, v3):
+
+    theta1 = np.angle(v2 - v1)
+    theta2 = np.angle((v3 - v1) / (v2 - v1))
+    theta3 = np.angle((v0 - v1) / (v3 - v1))
+    translation = (np.linalg.norm(v3 - v1))/2 * 1j
+
+    v0_folded = (np.conj((v0 - v1) * np.exp(1j*(np.pi/2 - theta1 - theta2)) - translation) + translation) * np.exp(-1j*(np.pi/2 - theta1 - theta2)) + v1
+    new_v0 = v1
+    new_v1 = v2
+    new_v2 = v3
+    new_v3 = v0_folded
+
+    v0_folded = (np.conj(new_v0 - new_v1) * (new_v3 - new_v1)) / np.conj(new_v3 - new_v1) + new_v1
+    newnew_v0 = new_v1
+    newnew_v1 = new_v2
+    newnew_v2 = new_v3
+    newnew_v3 = v0_folded
+    return newnew_v0, newnew_v1, newnew_v2, newnew_v3
+    
+
+def recut_then_fold_centered(v0, v1, v2, v3):
+    v0, v1, v2, v3 = recut_then_fold(v0, v1, v2, v3)
+    center = (v0 + v1 + v2 + v3) / 4
+    return v0 - center, v1 - center, v2 - center, v3 - center
+
 
 
 
 FOLD_FUNCS = {
-    "Diagonal Reflection": (fold, fold_centered),
-    "Diagonal Reflection in Reverse Direction": (fold_reverse, fold_reverse_centered),
-    "Perpendicular Bisector Reflection": (recut, recut_centered),
+    "Fold": (fold, fold_centered),
+    "Fold in Reverse Direction": (fold_reverse, fold_reverse_centered),
+    "Recut": (recut, recut_centered),
     "Snap": (snap, snap_centered),
-    "Fold then Recut": (fold_then_recut, fold_then_recut_centered)
+    "Fold then Recut": (fold_then_recut, fold_then_recut_centered),
+    "Recut then fold": (recut_then_fold, recut_then_fold_centered)
     
 }
 
