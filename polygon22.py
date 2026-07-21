@@ -82,10 +82,6 @@ def snap_centered(v0, v1, v2, v3):
     center = (v0 + v1 + v2 + v3) / 4
     return v0 - center, v1 - center, v2 - center, v3 - center
 
-# This function swaps vertice. In particular, it moves v0 -> v1, 
-# v1 -> v2, v2 -> v3 and v3 -> v0 at each iteration
-
-
 
 # This function folds the vertices that trace back to v0 and v2 and
 # recuts vertices that trace back to v1 and v3. 
