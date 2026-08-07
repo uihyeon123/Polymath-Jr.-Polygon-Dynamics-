@@ -1,4 +1,7 @@
-#!/usr/bin/env python3
+
+# =========================
+# This is the updated code which works for 4-7 gons. There might be some bugs of the center function and I will try to fix.
+# =========================
 import importlib.util
 import os
 import subprocess
